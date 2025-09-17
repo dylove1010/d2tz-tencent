@@ -1,7 +1,7 @@
 import os, requests, logging
 from flask import Flask
 from selenium import webdriver
-from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.firefox.options import Options  # 改为firefox的Options
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
@@ -17,18 +17,14 @@ logger = logging.getLogger(__name__)
 app = Flask(__name__)
 
 def fetch_terror_info():
-    options = Options()
-    # 关键修正：指向浏览器主程序（而非驱动）
-    options.binary_location = "/usr/bin/chromium"  # 原先是 /usr/bin/chromium-driver（错误）
-    # 启用新版无头模式（内存更低）
-    options.add_argument("--headless=new")  # 原先是 --headless（旧模式）
+    options = Options()  # Firefox的选项对象
+    # 配置Firefox二进制文件路径（根据实际环境调整）
+    options.binary_location = "/usr/bin/firefox"  # Firefox默认安装路径
+    options.add_argument("--headless")  # 无头模式
     options.add_argument("--no-sandbox")
     options.add_argument("--disable-dev-shm-usage")
-    # 新增内存优化参数
-    options.add_argument("--disable-images")  # 禁止加载图片，减少内存
-    options.add_argument("--window-size=800,600")  # 缩小窗口尺寸
-
-    driver = webdriver.Chrome(options=options)
+    # 使用Firefox驱动
+    driver = webdriver.Firefox(options=options)
     try:
         driver.get(TARGET_URL)
         WebDriverWait(driver, 10).until(
